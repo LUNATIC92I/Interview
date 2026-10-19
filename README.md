@@ -16,10 +16,11 @@ Socle technique imposé : **PHP 8.2+ (MVC sans framework), MySQL 8 / MariaDB 10.
 6. [Compte administrateur initial](#compte-administrateur-initial)
 7. [Moteur d'évaluation](#moteur-dévaluation)
 8. [Intégration optionnelle d'un modèle linguistique](#intégration-optionnelle-dun-modèle-linguistique)
-9. [Sécurité](#sécurité)
-10. [Tests](#tests)
-11. [Exploitation : sauvegardes, maintenance, migrations](#exploitation)
-12. [Limites connues](#limites-connues)
+9. [Accès payant et paiements GeniusPay](#accès-payant-et-paiements-geniuspay)
+10. [Sécurité](#sécurité)
+11. [Tests](#tests)
+12. [Exploitation : sauvegardes, maintenance, migrations](#exploitation)
+13. [Limites connues](#limites-connues)
 
 ---
 
@@ -128,8 +129,12 @@ Ouvrir http://127.0.0.1:8000. Avec `MAIL_DRIVER=log`, les courriels (confirmatio
 | `MAIL_DRIVER` | `none`, `log`, `mail` (fonction PHP) ou `smtp` (+ `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_ENCRYPTION`, `MAIL_FROM`) |
 | `AI_PROVIDER`, `AI_API_KEY`, `AI_MODEL`, `AI_EFFORT`, `AI_BASE_URL`, `AI_TIMEOUT_SECONDS`, `AI_MAX_CALLS_PER_USER_PER_DAY` | Analyse optionnelle par modèle linguistique (vide = désactivée) |
 | `INSTALL_TOKEN` | Active l'installateur web `/install` tant qu'aucun administrateur n'existe |
+| `PAYMENT_DRIVER` | `geniuspay` (paiements réels) ou `sandbox` (paiement simulé localement, refusé quand `APP_ENV=production`) |
+| `GENIUSPAY_API_KEY`, `GENIUSPAY_API_SECRET` | Clés du tableau de bord GeniusPay (`pk_sandbox_`/`sk_sandbox_` pour les essais, `pk_live_`/`sk_live_` en production) |
+| `GENIUSPAY_WEBHOOK_SECRET` | Secret `whsec_...` du webhook (voir ci-dessous) |
+| `GENIUSPAY_BASE_URL`, `GENIUSPAY_TIMEOUT_SECONDS`, `GENIUSPAY_PAYMENT_METHOD` | URL de l'API (par défaut `https://geniuspay.ci/api/v1/merchant`), délai d'attente, moyen imposé (vide = page de paiement GeniusPay avec tous les moyens) |
 
-Paramètres modifiables dans l'administration (table `app_settings`) : inscriptions ouvertes, confirmation d'adresse obligatoire, utilisation du modèle linguistique, simulations maximum par jour, nombre de questions par défaut, adresse de contact, message d'information affiché sur le site.
+Paramètres modifiables dans l'administration (table `app_settings`) : inscriptions ouvertes, confirmation d'adresse obligatoire, utilisation du modèle linguistique, simulations maximum par jour, nombre de questions par défaut, adresse de contact, message d'information affiché sur le site, accès payant (activé ou non, prix par métier, devise, nombre de simulations d'essai et questions par essai).
 
 ## Déploiement en production
 
@@ -214,6 +219,36 @@ AI_MAX_CALLS_PER_USER_PER_DAY=40
 
 `LlmEvaluator` appelle l'API depuis PHP (cURL), avec une sortie JSON contrainte par schéma ; le modèle renvoie un ratio par critère et le score est recalculé avec les poids de la grille. Quota par utilisateur et par jour, délai d'expiration, gestion des refus et réponses invalides : en cas d'échec, l'évaluation retombe sur le moteur de règles et le rapport l'indique (« le service externe n'était pas disponible »). Aucune analyse n'est jamais inventée. Seuls la question, les éléments attendus et la réponse sont transmis (ni nom ni adresse). L'option peut être coupée à tout moment dans Administration > Paramètres.
 
+## Accès payant et paiements GeniusPay
+
+**Règles d'accès** (réglables dans *Administration > Paramètres*) :
+- Chaque métier se débloque séparément par un **paiement unique de 6 550 FCFA** (XOF), sans limite de durée.
+- Avant paiement, chaque compte dispose d'**une simulation d'essai gratuite de 3 questions**, sur le métier de son choix, sans scénario.
+- Un métier débloqué donne accès aux simulations illimitées et à la page **Mes ressources** du métier : bibliothèque complète des questions (spécifiques au métier, à son secteur et générales) avec conseil, éléments attendus, erreurs fréquentes et réponse indicative, scénarios, guides de préparation et résultats du candidat sur ce métier.
+- Les pages publiques (accueil, catalogue, fiches métiers avec quelques exemples de questions, tarifs, conseils) restent consultables sans paiement. Les administrateurs ont accès à tout. Désactiver l'accès payant rend tout gratuit.
+- Les administrateurs peuvent accorder ou retirer un métier depuis la fiche d'un utilisateur (par exemple après un paiement reçu hors ligne) ; chaque opération est journalisée.
+
+**Déroulement d'un paiement** :
+1. Le candidat clique sur « Payer 6 550 FCFA » (`POST /checkout/{métier}`, protégé par CSRF et limité à 10 tentatives par heure). Le montant vient des paramètres, jamais du navigateur.
+2. Le serveur crée le paiement dans la table `payments`, appelle `POST /payments` de GeniusPay avec les clés `X-API-Key` / `X-API-Secret` (jamais exposées au navigateur) et redirige vers la page de paiement GeniusPay (Wave, Orange Money, MTN, Moov, cartes).
+3. Au retour (`/payments/{id}`), et à chaque notification webhook, le serveur **interroge l'API GeniusPay** (`GET /payments/{référence}`) : l'accès n'est accordé que si GeniusPay indique `completed` pour **exactement** le montant et la devise attendus. Le contenu du webhook et l'URL de retour ne suffisent jamais.
+4. Les transitions sont idempotentes (verrou de ligne, contrainte d'unicité, notifications dédoublonnées) : retour, webhook et vérifications manuelles peuvent arriver dans n'importe quel ordre. Un remboursement retire l'accès.
+
+**Mise en service** :
+1. Ouvrir un compte marchand GeniusPay et récupérer les clés dans *Paramètres > API* du tableau de bord.
+2. Dans `.env` : `PAYMENT_DRIVER=geniuspay`, `GENIUSPAY_API_KEY`, `GENIUSPAY_API_SECRET`. Commencer avec les clés `sandbox`, puis passer aux clés `live`.
+3. Déclarer le webhook (le secret `whsec_...` n'est renvoyé **qu'à la création** : le copier aussitôt dans `GENIUSPAY_WEBHOOK_SECRET`) :
+   ```bash
+   curl -X POST https://geniuspay.ci/api/v1/merchant/webhooks \
+     -H "X-API-Key: $GENIUSPAY_API_KEY" -H "X-API-Secret: $GENIUSPAY_API_SECRET" \
+     -H "Content-Type: application/json" \
+     -d '{"name":"InterviewPro","url":"https://votre-domaine/webhooks/geniuspay","events":["payment.success","payment.failed","payment.cancelled","payment.expired","payment.refunded"]}'
+   ```
+   Le webhook est vérifié par signature HMAC-SHA256 (`X-Webhook-Signature`, `X-Webhook-Timestamp`, tolérance de 5 minutes) puis enregistré dans `payment_notifications`. Il doit être accessible en HTTPS ; il n'utilise ni session ni jeton CSRF.
+4. Faire un paiement réel de bout en bout avant l'ouverture, puis suivre les paiements dans *Administration > Paiements* (bouton « Vérifier » pour relancer la confirmation auprès de GeniusPay).
+
+En développement, `PAYMENT_DRIVER=sandbox` remplace GeniusPay par une page locale « Paiement de test » qui permet de simuler un succès, un échec ou une annulation, sans aucun mouvement d'argent. Ce mode est refusé lorsque `APP_ENV=production`.
+
 ## Sécurité
 
 - Requêtes **préparées PDO** exclusivement (émulation désactivée) ; noms de tables/colonnes jamais issus de l'utilisateur ; échappement des jokers `LIKE`.
@@ -240,9 +275,9 @@ php tests/run.php --filter=Security
 
 Le lanceur recrée la base de test (`TEST_DB_DATABASE`, par défaut `interviewpro_test`, l'utilisateur MySQL doit y avoir les droits), applique migrations et contenu, démarre un serveur PHP sur un port libre et exécute les tests. Aucune dépendance externe (PHPUnit non requis). Le parcours navigateur nécessite Node.js et Playwright.
 
-Couverture : inscription, connexion, déconnexion, régénération de session, limitation des tentatives, réinitialisation du mot de passe, confirmation d'adresse, suppression de compte ; séparation des données entre utilisateurs (pages, API, PDF, comparaison) ; changement de langue (pages FR/EN, conservation du brouillon) ; création de simulation, sélection des questions, règles des modes, enregistrement, reprise, pause, relances, expiration du chronomètre ; calcul des scores (moteur de règles et LLM simulé, y compris les pannes) ; rapport, export PDF (validité de la structure) ; permissions administratives ; CSRF ; injections SQL ; échappement XSS ; fichiers sensibles non servis ; redirection ouverte ; validation des imports CSV ; parité des traductions ; base indisponible (503) ; affichage mobile sans défilement horizontal et absence d'erreur JavaScript.
+Couverture : inscription, connexion, déconnexion, régénération de session, limitation des tentatives, réinitialisation du mot de passe, confirmation d'adresse, suppression de compte ; séparation des données entre utilisateurs (pages, API, PDF, comparaison) ; changement de langue (pages FR/EN, conservation du brouillon) ; création de simulation, sélection des questions, règles des modes, enregistrement, reprise, pause, relances, expiration du chronomètre ; calcul des scores (moteur de règles et LLM simulé, y compris les pannes) ; rapport, export PDF (validité de la structure) ; accès payant (essai unique et limité, blocage, paiement réussi ou échoué, montant ou devise non conformes, signature et rejeu des webhooks, idempotence, remboursement, accès accordé ou retiré par un administrateur, conservation anonyme des paiements à la suppression du compte) ; permissions administratives ; CSRF ; injections SQL ; échappement XSS ; fichiers sensibles non servis ; redirection ouverte ; validation des imports CSV ; parité des traductions ; base indisponible (503) ; affichage mobile sans défilement horizontal et absence d'erreur JavaScript.
 
-Résultat de la dernière exécution : **55 tests PHP réussis (466 assertions) et 16 vérifications navigateur réussies**.
+Résultat de la dernière exécution : **70 tests PHP réussis (583 assertions) et 16 vérifications navigateur réussies**.
 
 ## Exploitation
 
@@ -257,7 +292,7 @@ Résultat de la dernière exécution : **55 tests PHP réussis (466 assertions) 
 
 - L'évaluation automatique repose sur des indices textuels : elle est **indicative**, aide à structurer les réponses mais ne remplace pas le jugement d'un recruteur. L'analyse par modèle linguistique, si elle est activée, reste également indicative.
 - Les relances sont prédéfinies (une par question au maximum) : il ne s'agit pas d'un dialogue libre.
-- Pas d'offre payante : le lien « Tarifs » n'est donc pas affiché.
+- L'intégration GeniusPay suit la documentation publique de l'API (création, consultation, webhooks signés). Elle a été testée avec un transport simulé et le mode sandbox local, pas encore contre le service réel : un paiement de test avec des clés `sandbox` est nécessaire avant la mise en production.
 - Le changement d'adresse électronique passe par l'administrateur.
 - La police Inter est chargée depuis Google Fonts ; à défaut, la police système prend le relais.
 - Les icônes sont un sous-ensemble de [Lucide](https://lucide.dev) (licence ISC) intégré en SVG.

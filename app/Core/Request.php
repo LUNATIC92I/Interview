@@ -95,6 +95,12 @@ final class Request
         return $this->json;
     }
 
+    /** Unparsed request body (needed to verify signed webhooks). */
+    public function rawBody(): string
+    {
+        return $this->rawBody;
+    }
+
     public function header(string $name): string
     {
         $key = 'HTTP_' . strtoupper(str_replace('-', '_', $name));

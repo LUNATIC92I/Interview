@@ -187,10 +187,12 @@ final class UserService
                 Database::query("DELETE FROM interview_answers WHERE session_id IN $in", $p);
                 Database::query("DELETE FROM interview_sessions WHERE id IN $in", $p);
             }
-            foreach (['user_skill_progress', 'user_goals', 'login_history', 'password_reset_tokens', 'email_verification_tokens', 'user_preferences', 'profiles', 'user_roles'] as $table) {
+            foreach (['profession_access', 'user_skill_progress', 'user_goals', 'login_history', 'password_reset_tokens', 'email_verification_tokens', 'user_preferences', 'profiles', 'user_roles'] as $table) {
                 Database::query("DELETE FROM $table WHERE user_id = :u", ['u' => $userId]);
             }
             Database::query('UPDATE content_reports SET user_id = NULL, message = NULL WHERE user_id = :u', ['u' => $userId]);
+            // Payment records are kept for accounting without any link to the deleted account.
+            Database::query('UPDATE payments SET user_id = NULL WHERE user_id = :u', ['u' => $userId]);
             Database::query('DELETE FROM rate_limits WHERE rl_key LIKE :k', ['k' => 'ai:' . $userId . ':%']);
             Database::delete('users', ['id' => $userId]);
         });

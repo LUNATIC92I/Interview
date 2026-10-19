@@ -76,6 +76,20 @@ final class PageController extends Controller
         return $this->view('pages/resource', ['title' => $item['title'], 'item' => $item]);
     }
 
+    public function pricing(Request $request): Response
+    {
+        $user = \App\Services\Auth::user();
+        return $this->view('pages/pricing', [
+            'title' => t('pricing.title'),
+            'price' => format_price(\App\Services\AccessService::price(), \App\Services\AccessService::currency()),
+            'paywall' => \App\Services\AccessService::paywallEnabled(),
+            'trialQuestions' => \App\Services\AccessService::trialQuestionLimit(),
+            'trials' => \App\Services\Settings::int('trial_simulations'),
+            'trialsLeft' => $user ? \App\Services\AccessService::trialsLeft((int) $user['id']) : null,
+            'professionCount' => (int) Database::fetchColumn('SELECT COUNT(*) FROM professions WHERE is_active = 1'),
+        ]);
+    }
+
     public function privacy(Request $request): Response
     {
         return $this->view('pages/privacy', ['title' => t('privacy.title')]);

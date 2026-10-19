@@ -30,6 +30,27 @@
         <p class="disclaimer" style="margin-top:1rem"><?= icon('lock', 16) ?><span><?= e(t('admin.users.privacy')) ?></span></p>
     </div></div>
 </div>
+<div class="card" style="margin-top:20px"><div class="card-header"><h2><?= e(t('admin.access.title')) ?></h2></div><div class="card-body">
+    <?php if (!$access): ?><p class="muted"><?= e(t('admin.access.none')) ?></p><?php else: ?>
+    <div class="table-wrap"><table class="table"><thead><tr><th><?= e(t('fields.profession')) ?></th><th><?= e(t('admin.access.source')) ?></th><th><?= e(t('fields.date')) ?></th><th><span class="sr-only"><?= e(t('common.actions')) ?></span></th></tr></thead><tbody>
+        <?php foreach ($access as $a): ?><tr>
+            <td><?= e($a['profession_name']) ?></td>
+            <td><?= e(t('admin.access.sources.' . $a['source'])) ?><?php if ($a['provider_reference']): ?> <span class="code"><?= e($a['provider_reference']) ?></span><?php endif; ?></td>
+            <td><?= e(format_date($a['granted_at'], true)) ?></td>
+            <td style="text-align:right"><form method="post" action="<?= e(url('/admin/users/' . $user['id'] . '/access/' . $a['profession_id'] . '/revoke')) ?>" data-confirm="<?= e(t('admin.access.revoke_confirm')) ?>"><?= csrf_field() ?><button class="btn btn-outline-danger btn-sm" type="submit"><?= e(t('admin.access.revoke')) ?></button></form></td>
+        </tr><?php endforeach; ?>
+    </tbody></table></div>
+    <?php endif; ?>
+    <form method="post" action="<?= e(url('/admin/users/' . $user['id'] . '/access')) ?>" class="row" style="margin-top:1rem;align-items:flex-end">
+        <?= csrf_field() ?>
+        <div class="form-group" style="margin:0;flex:1;min-width:220px"><label for="grant_profession"><?= e(t('admin.access.grant_label')) ?></label>
+            <select id="grant_profession" name="profession_id" required><option value=""><?= e(t('common.choose')) ?></option>
+                <?php foreach ($professions as $p): ?><option value="<?= (int) $p['id'] ?>"><?= e($p['name']) ?></option><?php endforeach; ?>
+            </select></div>
+        <button class="btn btn-secondary" type="submit"><?= icon('plus', 18) ?><?= e(t('admin.access.grant')) ?></button>
+    </form>
+    <p class="help" style="margin-top:.5rem"><?= e(t('admin.access.grant_help')) ?></p>
+</div></div>
 <div class="card" style="margin-top:20px"><div class="card-header"><h2><?= e(t('account.login_history')) ?></h2></div>
     <div class="table-wrap" style="border:0"><table class="table"><thead><tr><th><?= e(t('fields.date')) ?></th><th><?= e(t('account.event')) ?></th><th><?= e(t('account.ip')) ?></th></tr></thead><tbody>
         <?php foreach ($logins as $l): ?><tr><td><?= e(format_date($l['created_at'], true)) ?></td><td><?= e(t('account.events.' . $l['event'])) ?></td><td><span class="code"><?= e($l['ip_masked']) ?></span></td></tr><?php endforeach; ?>

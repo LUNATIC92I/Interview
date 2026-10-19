@@ -5,6 +5,7 @@ $links = [
     '/professions' => t('nav.professions'),
     '/features' => t('nav.features'),
     '/resources' => t('nav.resources'),
+    '/pricing' => t('nav.pricing'),
 ];
 $initial = $authUser ? mb_strtoupper(mb_substr($authUser['display_name'], 0, 1)) : '';
 ?>
@@ -26,6 +27,7 @@ $initial = $authUser ? mb_strtoupper(mb_substr($authUser['display_name'], 0, 1))
                     <summary aria-label="<?= e(t('nav.account_menu')) ?>"><span class="avatar" aria-hidden="true"><?= e($initial) ?></span><span class="sr-only"><?= e($authUser['display_name']) ?></span><?= icon('chevron-down', 16) ?></summary>
                     <div class="menu">
                         <a href="<?= e(url('/dashboard')) ?>"><?= icon('layout-dashboard', 18) ?><?= e(t('nav.dashboard')) ?></a>
+                        <a href="<?= e(url('/my-resources')) ?>"><?= icon('book-open', 18) ?><?= e(t('nav.my_resources')) ?></a>
                         <a href="<?= e(url('/history')) ?>"><?= icon('history', 18) ?><?= e(t('nav.history')) ?></a>
                         <a href="<?= e(url('/account')) ?>"><?= icon('user', 18) ?><?= e(t('nav.account')) ?></a>
                         <?php if (in_array('admin', $authUser['roles'], true)): ?>
@@ -51,6 +53,7 @@ $initial = $authUser ? mb_strtoupper(mb_substr($authUser['display_name'], 0, 1))
                 <?php endforeach; ?>
                 <?php if ($authUser): ?>
                     <li><a href="<?= e(url('/dashboard')) ?>"><?= e(t('nav.dashboard')) ?></a></li>
+                    <li><a href="<?= e(url('/my-resources')) ?>"><?= e(t('nav.my_resources')) ?></a></li>
                     <li><a href="<?= e(url('/history')) ?>"><?= e(t('nav.history')) ?></a></li>
                     <li><a href="<?= e(url('/account')) ?>"><?= e(t('nav.account')) ?></a></li>
                     <?php if (in_array('admin', $authUser['roles'], true)): ?><li><a href="<?= e(url('/admin')) ?>"><?= e(t('nav.admin')) ?></a></li><?php endif; ?>

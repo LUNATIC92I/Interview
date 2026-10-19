@@ -27,6 +27,10 @@ final class SettingsController extends AdminController
             'mailConfigured' => Mailer::isConfigured(),
             'llmConfigured' => (string) \App\Core\Config::get('ai.provider') !== '' && (string) \App\Core\Config::get('ai.api_key') !== '',
             'llmActive' => EvaluationService::llmAvailable(),
+            'paymentDriver' => \App\Services\PaymentService::driver(),
+            'paymentConfigured' => \App\Services\PaymentService::driver() === 'geniuspay'
+                ? \App\Services\PaymentService::geniusPay()->configured()
+                : \App\Services\PaymentService::sandboxAllowed(),
         ]);
     }
 
@@ -37,6 +41,10 @@ final class SettingsController extends AdminController
             'default_question_count' => 'required|int|between:3,15',
             'contact_email' => 'required|email',
             'maintenance_message' => 'nullable|max:500',
+            'access_price' => 'required|int|between:200,10000000',
+            'access_currency' => 'required|in:XOF,EUR,USD',
+            'trial_simulations' => 'required|int|between:0,10',
+            'trial_question_limit' => 'required|int|between:3,15',
         ]);
         if ($v->fails()) {
             return $this->back($request, '/admin/settings', $v->errors());

@@ -149,6 +149,12 @@
       reveals.forEach(function (el) { io.observe(el); });
     }
 
+    // Payment hand-off: open the provider checkout (a plain navigation, allowed by the CSP form-action rule)
+    var handoff = document.querySelector('[data-auto-redirect]');
+    if (handoff) {
+      setTimeout(function () { window.location.assign(handoff.href); }, 400);
+    }
+
     // Header elevation once the page scrolls
     var header = document.querySelector('.site-header');
     if (header) {
@@ -282,7 +288,20 @@
       var checked = form.querySelector('[data-mode-radio]:checked');
       custom.hidden = !checked || checked.value !== 'custom';
     }
+    var accessNote = form.querySelector('[data-access-note]');
+    function onAccess() {
+      if (!accessNote) { return; }
+      var opt = prof.options[prof.selectedIndex];
+      var unlocked = (accessNote.getAttribute('data-unlocked') || '').split(',');
+      var state = !prof.value ? 'none' : (unlocked.indexOf(prof.value) !== -1 ? 'unlocked'
+        : (parseInt(accessNote.getAttribute('data-trials'), 10) > 0 ? 'trial' : 'locked'));
+      accessNote.querySelectorAll('[data-access-state]').forEach(function (el) { el.hidden = el.getAttribute('data-access-state') !== state; });
+      accessNote.querySelectorAll('[data-access-link]').forEach(function (a) {
+        a.href = accessNote.getAttribute('data-checkout') + (opt ? opt.getAttribute('data-slug') || '' : '');
+      });
+    }
     prof.addEventListener('change', filterScenarios);
+    prof.addEventListener('change', onAccess);
     scen.addEventListener('change', onScenario);
     form.querySelectorAll('[data-mode-radio]').forEach(function (r) { r.addEventListener('change', onMode); });
     form.addEventListener('submit', function () { typeSel.disabled = false; countSel.disabled = false; });

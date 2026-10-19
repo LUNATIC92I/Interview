@@ -25,6 +25,7 @@ $env = [
     'LOGIN_MAX_ATTEMPTS' => '5',
     'AI_PROVIDER' => '',
     'INSTALL_TOKEN' => '',
+    'PAYMENT_DRIVER' => 'sandbox',
 ];
 foreach ($env as $k => $v) {
     putenv("$k=$v");
@@ -62,6 +63,8 @@ $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
 require BASE_PATH . '/database/seeders/DatabaseSeeder.php';
 (new DatabaseSeeder($out))->run();
 UserService::createAdmin(Context::$adminEmail, 'Test Admin', Context::$adminPassword);
+// Paid access is exercised by the Payment tests, which switch it on; the other suites run with free access.
+App\Services\Settings::set('paywall_enabled', '0');
 
 // 2. Built-in web server
 $sock = stream_socket_server('tcp://127.0.0.1:0');

@@ -20,6 +20,11 @@ final class Settings
         'contact_email' => ['string', 'contact@example.com'],
         'maintenance_message' => ['string', ''],
         'default_question_count' => ['int', '6'],
+        'paywall_enabled' => ['bool', '1'],
+        'access_price' => ['int', '6550'],
+        'access_currency' => ['string', 'XOF'],
+        'trial_simulations' => ['int', '1'],
+        'trial_question_limit' => ['int', '3'],
     ];
 
     private static ?array $cache = null;

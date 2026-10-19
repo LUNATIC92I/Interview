@@ -21,6 +21,24 @@ $points = array_map(static fn ($r) => ['label' => format_date($r['completed_at']
 </div></section>
 
 <section class="section" style="padding-top:16px"><div class="container stack">
+    <?php if ($access['paywall'] && !in_array('admin', $authUser['roles'], true)): ?>
+    <div class="card reveal" data-access-summary><div class="card-body row row-between" style="align-items:center">
+        <div style="flex:1;min-width:240px">
+            <h2 style="font-size:1.05rem;margin:0"><?= icon('book-open', 18) ?> <?= e(t('my_resources.title')) ?></h2>
+            <?php if ($access['unlocked']): ?>
+                <p class="muted small" style="margin:.3rem 0 0"><?= e(t('dashboard.access_unlocked', ['list' => implode(', ', array_column($access['unlocked'], 'name'))])) ?></p>
+            <?php elseif ($access['trials_left'] > 0): ?>
+                <p class="muted small" style="margin:.3rem 0 0"><?= e(t('dashboard.access_trial', ['count' => $access['trial_questions'], 'price' => $access['price']])) ?></p>
+            <?php else: ?>
+                <p class="muted small" style="margin:.3rem 0 0"><?= e(t('dashboard.access_none', ['price' => $access['price']])) ?></p>
+            <?php endif; ?>
+        </div>
+        <div class="row">
+            <?php if ($access['unlocked']): ?><a class="btn btn-secondary" href="<?= e(url('/my-resources')) ?>"><?= e(t('my_resources.open')) ?></a><?php endif; ?>
+            <a class="btn btn-<?= $access['unlocked'] ? 'ghost' : 'primary' ?>" href="<?= e(url('/professions')) ?>"><?= icon('lock', 16) ?><?= e(t('dashboard.unlock_profession')) ?></a>
+        </div>
+    </div></div>
+    <?php endif; ?>
     <div class="grid grid-4">
         <div class="card stat reveal"><div class="stat-label"><?= icon('layers', 16) ?><?= e(t('dashboard.total')) ?></div><div class="stat-value" data-count="<?= (int) $totals['total'] ?>"><?= (int) $totals['total'] ?></div></div>
         <div class="card stat reveal"><div class="stat-label"><?= icon('check-circle', 16) ?><?= e(t('dashboard.completed')) ?></div><div class="stat-value" data-count="<?= $completed ?>"><?= $completed ?></div></div>

@@ -113,6 +113,24 @@ function format_date(?string $datetime, bool $withTime = false): string
     return date($loc === 'fr' ? ($withTime ? 'd/m/Y H:i' : 'd/m/Y') : ($withTime ? 'j M Y, H:i' : 'j M Y'), $ts);
 }
 
+/** Badge class for a payment status. */
+function payment_badge(string $status): string
+{
+    return match ($status) {
+        'completed' => 'badge-success',
+        'pending', 'processing', 'created' => 'badge-warning',
+        'refunded' => 'badge-primary',
+        default => 'badge-danger',
+    };
+}
+
+/** Price in whole currency units: "6 550 FCFA" in French, "6,550 FCFA" in English. */
+function format_price(int $amount, string $currency = 'XOF'): string
+{
+    $label = in_array(strtoupper($currency), ['XOF', 'XAF'], true) ? 'FCFA' : strtoupper($currency);
+    return format_number($amount) . "\u{00A0}" . $label;
+}
+
 function format_number(float|int|null $value, int $decimals = 0): string
 {
     $value = (float) ($value ?? 0);

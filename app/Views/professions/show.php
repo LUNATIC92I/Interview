@@ -10,8 +10,18 @@
         </div>
     </div>
     <div class="row" style="margin-top:8px">
-        <a class="btn btn-primary btn-lg" href="<?= e(url('/interview/new', ['profession' => $profession['slug']])) ?>"><?= icon('play', 18) ?><?= e(t('professions.start')) ?></a>
+        <?php if ($accessState === 'locked'): ?>
+            <a class="btn btn-primary btn-lg" href="<?= e(url('/checkout/' . $profession['slug'])) ?>"><?= icon('lock', 18) ?><?= e(t('access.unlock_for', ['price' => $price])) ?></a>
+            <a class="btn btn-secondary btn-lg" href="<?= e(url('/interview/new', ['profession' => $profession['slug']])) ?>"><?= icon('play', 18) ?><?= e(t('access.try_free')) ?></a>
+        <?php else: ?>
+            <a class="btn btn-primary btn-lg" href="<?= e(url('/interview/new', ['profession' => $profession['slug']])) ?>"><?= icon('play', 18) ?><?= e(t('professions.start')) ?></a>
+            <?php if ($accessState === 'unlocked'): ?>
+                <a class="btn btn-secondary btn-lg" href="<?= e(url('/my-resources/' . $profession['slug'])) ?>"><?= icon('book-open', 18) ?><?= e(t('my_resources.open')) ?></a>
+            <?php endif; ?>
+        <?php endif; ?>
     </div>
+    <?php if ($accessState === 'locked'): ?><p class="small muted" style="margin-top:.6rem"><?= e(t('access.profession_note', ['price' => $price])) ?> <a href="<?= e(url('/pricing')) ?>"><?= e(t('access.see_pricing')) ?></a></p><?php endif; ?>
+    <?php if ($accessState === 'unlocked'): ?><p class="small" style="margin-top:.6rem;color:var(--success-text)"><?= icon('check-circle', 16) ?> <?= e(t('access.profession_unlocked')) ?></p><?php endif; ?>
 </div></section>
 <section class="section" style="padding-top:24px"><div class="container grid grid-sidebar">
     <div class="stack">

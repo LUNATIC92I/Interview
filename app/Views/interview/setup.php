@@ -23,12 +23,22 @@ $modeIcons = ['training' => 'lightbulb', 'realistic' => 'briefcase', 'timed' => 
                 <option value=""><?= e(t('common.choose')) ?></option>
                 <?php foreach ($grouped as $cat => $list): ?>
                     <optgroup label="<?= e($cat) ?>">
-                        <?php foreach ($list as $p): ?><option value="<?= (int) $p['id'] ?>" data-category="<?= (int) $p['category_id'] ?>" <?= $selectedId === (int) $p['id'] ? 'selected' : '' ?>><?= e($p['name']) ?></option><?php endforeach; ?>
+                        <?php foreach ($list as $p): ?><option value="<?= (int) $p['id'] ?>" data-category="<?= (int) $p['category_id'] ?>" data-slug="<?= e($p['slug']) ?>" <?= $selectedId === (int) $p['id'] ? 'selected' : '' ?>><?= e($p['name']) ?></option><?php endforeach; ?>
                     </optgroup>
                 <?php endforeach; ?>
             </select>
             <?= error_message('profession_id') ?>
         </div>
+        <?php if ($access['paywall'] && !$access['all']):
+            $isUnlocked = in_array($selectedId, $access['unlocked'], true);
+            $state = $selectedId === 0 ? 'none' : ($isUnlocked ? 'unlocked' : ($access['trials_left'] > 0 ? 'trial' : 'locked'));
+        ?>
+        <div data-access-note data-unlocked="<?= e(implode(',', $access['unlocked'])) ?>" data-trials="<?= (int) $access['trials_left'] ?>" data-checkout="<?= e(url('/checkout/')) ?>">
+            <div class="alert alert-success" data-access-state="unlocked" <?= $state === 'unlocked' ? '' : 'hidden' ?>><?= icon('check-circle', 20) ?><p><?= e(t('access.setup_unlocked')) ?></p></div>
+            <div class="alert alert-info" data-access-state="trial" <?= $state === 'trial' ? '' : 'hidden' ?>><?= icon('info', 20) ?><p><?= e(t('access.setup_trial', ['count' => $access['trial_questions'], 'price' => $access['price']])) ?> <a data-access-link href="<?= e(url('/checkout/' . ($selected['slug'] ?? ''))) ?>"><?= e(t('access.unlock_link')) ?></a></p></div>
+            <div class="alert alert-warning" data-access-state="locked" <?= $state === 'locked' ? '' : 'hidden' ?>><?= icon('lock', 20) ?><p><?= e(t('access.setup_locked', ['price' => $access['price']])) ?> <a data-access-link href="<?= e(url('/checkout/' . ($selected['slug'] ?? ''))) ?>"><?= e(t('access.unlock_link')) ?></a></p></div>
+        </div>
+        <?php endif; ?>
         <div class="form-group">
             <label for="scenario_id"><?= e(t('setup.scenario')) ?></label>
             <select id="scenario_id" name="scenario_id" data-scenario-select<?= error_attrs('scenario_id') ?>>

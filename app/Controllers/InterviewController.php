@@ -11,6 +11,7 @@ use App\Core\Response;
 use App\Models\Domain;
 use App\Models\Profession;
 use App\Models\Scenario;
+use App\Services\AccessService;
 use App\Services\AuditLogger;
 use App\Services\InterviewEngine;
 use App\Services\RateLimiter;
@@ -35,7 +36,16 @@ final class InterviewController extends Controller
         foreach (Scenario::all() as $s) {
             $scenarios[] = $s;
         }
+        $uid = (int) $user['id'];
         return $this->view('interview/setup', [
+            'access' => [
+                'paywall' => AccessService::paywallEnabled(),
+                'unlocked' => array_map('intval', array_column(AccessService::unlocked($uid), 'profession_id')),
+                'all' => AccessService::paywallEnabled() && AccessService::hasAccess($uid, 0),
+                'trials_left' => AccessService::trialsLeft($uid),
+                'trial_questions' => AccessService::trialQuestionLimit(),
+                'price' => format_price(AccessService::price(), AccessService::currency()),
+            ],
             'title' => t('setup.title'),
             'professions' => $professions,
             'selected' => $selected,
@@ -64,10 +74,24 @@ final class InterviewController extends Controller
         if ($todayCount >= Settings::int('max_sessions_per_day') || !RateLimiter::attempt('session-create:' . $user['id'], 30, 3600)) {
             return $this->back($request, '/interview/new', [], t('setup.limit_reached'));
         }
+        $access = AccessService::decide((int) $user['id'], $cfg['profession_id']);
+        if (!$access['allowed']) {
+            $slug = (string) Database::fetchColumn('SELECT slug FROM professions WHERE id = :id', ['id' => $cfg['profession_id']]);
+            $this->flash('info', t('access.locked_flash', ['price' => format_price(AccessService::price(), AccessService::currency())]));
+            return $this->redirect('/checkout/' . $slug);
+        }
+        if ($access['trial']) {
+            // Trial: a short simulation without scenario, recorded so that it is offered only once.
+            $cfg['scenario_id'] = null;
+            $cfg['question_count'] = min($cfg['question_count'], AccessService::trialQuestionLimit());
+        }
         try {
             $session = InterviewEngine::create((int) $user['id'], $cfg);
         } catch (\DomainException $e) {
             return $this->back($request, '/interview/new', [], $e->getMessage());
+        }
+        if ($access['trial']) {
+            Database::update('interview_sessions', ['is_trial' => 1], ['id' => $session['id']]);
         }
         AuditLogger::log('interview.created', 'interview_session', (int) $session['id'], ['mode' => $cfg['mode'], 'type' => $cfg['interview_type']]);
         return $this->redirect('/interview/' . $session['public_id']);

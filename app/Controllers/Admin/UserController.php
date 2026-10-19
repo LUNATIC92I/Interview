@@ -70,7 +70,19 @@ final class UserController extends AdminController
             ['u' => $user['id']]
         );
         $logins = Database::fetchAll('SELECT * FROM login_history WHERE user_id = :u ORDER BY id DESC LIMIT 10', ['u' => $user['id']]);
-        return $this->view('admin/users/show', ['title' => $user['display_name'], 'user' => $user, 'activity' => $activity, 'logins' => $logins]);
+        $access = Database::fetchAll(
+            'SELECT a.*, COALESCE(t1.name, t2.name) AS profession_name, pay.provider_reference
+             FROM profession_access a
+             LEFT JOIN profession_translations t1 ON t1.profession_id = a.profession_id AND t1.locale = :l
+             LEFT JOIN profession_translations t2 ON t2.profession_id = a.profession_id AND t2.locale = :o
+             LEFT JOIN payments pay ON pay.id = a.payment_id
+             WHERE a.user_id = :u AND a.revoked_at IS NULL ORDER BY a.granted_at DESC',
+            ['u' => $user['id'], 'l' => locale(), 'o' => locale() === 'fr' ? 'en' : 'fr']
+        );
+        return $this->view('admin/users/show', [
+            'title' => $user['display_name'], 'user' => $user, 'activity' => $activity, 'logins' => $logins,
+            'access' => $access, 'professions' => \App\Models\Profession::options(),
+        ]);
     }
 
     public function status(Request $request, string $id): Response

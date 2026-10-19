@@ -21,6 +21,7 @@ final class AccountController extends Controller
     {
         $user = $this->user();
         return $this->view('account/index', [
+            'payments' => PaymentController::history((int) $user['id']),
             'title' => t('account.title'),
             'profile' => Database::fetch('SELECT * FROM profiles WHERE user_id = :u', ['u' => $user['id']]) ?? [],
             'prefs' => Database::fetch('SELECT * FROM user_preferences WHERE user_id = :u', ['u' => $user['id']]) ?? [],

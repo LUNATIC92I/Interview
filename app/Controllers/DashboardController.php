@@ -78,7 +78,15 @@ final class DashboardController extends Controller
         }
         unset($g);
 
+        $uid = (int) $this->user()['id'];
         return $this->view('dashboard/index', [
+            'access' => [
+                'paywall' => \App\Services\AccessService::paywallEnabled(),
+                'unlocked' => \App\Services\AccessService::unlocked($uid),
+                'trials_left' => \App\Services\AccessService::trialsLeft($uid),
+                'trial_questions' => \App\Services\AccessService::trialQuestionLimit(),
+                'price' => format_price(\App\Services\AccessService::price(), \App\Services\AccessService::currency()),
+            ],
             'title' => t('dashboard.title'),
             'totals' => $totals,
             'evolution' => $evolution,

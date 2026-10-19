@@ -10,6 +10,7 @@
                 <li><a href="<?= e(url('/simulations')) ?>"><?= e(t('nav.simulations')) ?></a></li>
                 <li><a href="<?= e(url('/professions')) ?>"><?= e(t('nav.professions')) ?></a></li>
                 <li><a href="<?= e(url('/features')) ?>"><?= e(t('nav.features')) ?></a></li>
+                <li><a href="<?= e(url('/pricing')) ?>"><?= e(t('nav.pricing')) ?></a></li>
             </ul>
         </div>
         <div>

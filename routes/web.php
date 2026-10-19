@@ -9,8 +9,10 @@ use App\Controllers\DashboardController;
 use App\Controllers\InstallController;
 use App\Controllers\InterviewController;
 use App\Controllers\PageController;
+use App\Controllers\PaymentController;
 use App\Controllers\ProfessionController;
 use App\Controllers\ReportController;
+use App\Controllers\ResourceController;
 use App\Core\Router;
 
 return static function (Router $r): void {
@@ -21,6 +23,7 @@ return static function (Router $r): void {
     $r->get('/resources', [PageController::class, 'resources']);
     $r->get('/resources/{slug}', [PageController::class, 'resource']);
     $r->get('/privacy', [PageController::class, 'privacy']);
+    $r->get('/pricing', [PageController::class, 'pricing']);
     $r->get('/lang/{locale}', [PageController::class, 'switchLocale']);
     $r->get('/professions', [ProfessionController::class, 'index']);
     $r->get('/professions/{slug}', [ProfessionController::class, 'show']);
@@ -37,6 +40,7 @@ return static function (Router $r): void {
         $r->post('/password/reset', [AuthController::class, 'reset']);
     });
     $r->get('/email/verify', [AuthController::class, 'verifyEmail']);
+    $r->post('/webhooks/geniuspay', [PaymentController::class, 'webhook']);
     $r->get('/install', [InstallController::class, 'show']);
     $r->post('/install', [InstallController::class, 'install']);
 
@@ -66,6 +70,15 @@ return static function (Router $r): void {
         $r->get('/reports/{publicId}', [ReportController::class, 'show']);
         $r->get('/reports/{publicId}/pdf', [ReportController::class, 'pdf']);
 
+        $r->get('/checkout/{slug}', [PaymentController::class, 'checkout']);
+        $r->post('/checkout/{slug}', [PaymentController::class, 'start'], ['verified']);
+        $r->get('/payments/sandbox/{publicId}', [PaymentController::class, 'sandbox']);
+        $r->post('/payments/sandbox/{publicId}', [PaymentController::class, 'sandboxSettle']);
+        $r->get('/payments/{publicId}/checkout', [PaymentController::class, 'handoff']);
+        $r->get('/payments/{publicId}', [PaymentController::class, 'show']);
+        $r->get('/my-resources', [ResourceController::class, 'index']);
+        $r->get('/my-resources/{slug}', [ResourceController::class, 'show']);
+
         $r->get('/account', [AccountController::class, 'index']);
         $r->post('/account/profile', [AccountController::class, 'updateProfile']);
         $r->post('/account/preferences', [AccountController::class, 'updatePreferences']);
@@ -80,6 +93,10 @@ return static function (Router $r): void {
         $r->get('/users/{id}', [Admin\UserController::class, 'show']);
         $r->post('/users/{id}/status', [Admin\UserController::class, 'status']);
         $r->post('/users/{id}/roles', [Admin\UserController::class, 'roles']);
+        $r->post('/users/{id}/access', [Admin\PaymentController::class, 'grant']);
+        $r->post('/users/{id}/access/{professionId}/revoke', [Admin\PaymentController::class, 'revoke']);
+        $r->get('/payments', [Admin\PaymentController::class, 'index']);
+        $r->post('/payments/{id}/refresh', [Admin\PaymentController::class, 'refresh']);
 
         foreach (['categories' => Admin\CategoryController::class, 'professions' => Admin\ProfessionController::class,
                   'questions' => Admin\QuestionController::class, 'scenarios' => Admin\ScenarioController::class,

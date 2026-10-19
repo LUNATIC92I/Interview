@@ -110,10 +110,10 @@ final class AdminTest extends TestCase
         $this->assertSame(100, (int) Database::fetchColumn('SELECT SUM(weight) FROM rubric_criteria WHERE rubric_id = 1'), 'weights not totalling 100 rejected');
 
         $this->a->get('/admin/settings');
-        $this->a->post('/admin/settings', ['registration_open' => '', 'ai_evaluation_enabled' => '1', 'max_sessions_per_day' => 30, 'default_question_count' => 6, 'contact_email' => 'c@test.local', 'maintenance_message' => '']);
+        $this->a->post('/admin/settings', ['registration_open' => '', 'ai_evaluation_enabled' => '1', 'max_sessions_per_day' => 30, 'default_question_count' => 6, 'contact_email' => 'c@test.local', 'maintenance_message' => '', 'access_price' => 6550, 'access_currency' => 'XOF', 'trial_simulations' => 1, 'trial_question_limit' => 3]);
         $this->assertContains('temporairement fermées', Context::http()->get('/register')['body']);
         $this->a->get('/admin/settings');
-        $this->a->post('/admin/settings', ['registration_open' => '1', 'ai_evaluation_enabled' => '1', 'max_sessions_per_day' => 30, 'default_question_count' => 6, 'contact_email' => 'c@test.local', 'maintenance_message' => '']);
+        $this->a->post('/admin/settings', ['registration_open' => '1', 'ai_evaluation_enabled' => '1', 'max_sessions_per_day' => 30, 'default_question_count' => 6, 'contact_email' => 'c@test.local', 'maintenance_message' => '', 'access_price' => 6550, 'access_currency' => 'XOF', 'trial_simulations' => 1, 'trial_question_limit' => 3]);
 
         $this->a->get('/admin/translations');
         $this->a->post('/admin/translations', ['key' => 'nav.resources', 'value_fr' => 'Conseils pratiques', 'value_en' => 'Advice']);

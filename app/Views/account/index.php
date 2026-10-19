@@ -59,6 +59,18 @@
         <p class="help"><?= e(t('account.ip_note')) ?></p>
     </div></div>
 
+    <div class="card" id="payments"><div class="card-header"><h2><?= icon('landmark', 20) ?> <?= e(t('account.payments')) ?></h2></div><div class="card-body">
+        <?php if (!$payments): ?><p class="muted"><?= e(t('account.no_payments')) ?></p><?php else: ?>
+        <div class="table-wrap"><table class="table table-responsive"><thead><tr><th><?= e(t('fields.date')) ?></th><th><?= e(t('fields.profession')) ?></th><th><?= e(t('payment.amount')) ?></th><th><?= e(t('fields.status')) ?></th></tr></thead><tbody>
+            <?php foreach ($payments as $p): ?><tr>
+                <td data-label="<?= e(t('fields.date')) ?>"><a href="<?= e(url('/payments/' . $p['public_id'])) ?>"><?= e(format_date($p['created_at'], true)) ?></a></td>
+                <td data-label="<?= e(t('fields.profession')) ?>"><?= e($p['profession_name']) ?></td>
+                <td data-label="<?= e(t('payment.amount')) ?>"><?= e(format_price((int) $p['amount'], $p['currency'])) ?></td>
+                <td data-label="<?= e(t('fields.status')) ?>"><span class="badge <?= e(payment_badge($p['status'])) ?>"><?= e(t('payment.status.' . $p['status'])) ?></span></td>
+            </tr><?php endforeach; ?>
+        </tbody></table></div>
+        <?php endif; ?>
+    </div></div>
     <div class="card" id="danger" style="border-color:#F3B8BF"><div class="card-header"><h2><?= icon('trash', 20) ?> <?= e(t('account.delete_title')) ?></h2></div><div class="card-body">
         <p class="muted"><?= e(t('account.delete_text')) ?></p>
         <form method="post" action="<?= e(url('/account/delete')) ?>" data-confirm="<?= e(t('account.delete_confirm')) ?>">

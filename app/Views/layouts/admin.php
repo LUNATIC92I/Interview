@@ -3,6 +3,7 @@ $nav = [
     ['group' => t('admin.nav.overview')],
     ['/admin', 'layout-dashboard', t('admin.nav.dashboard')],
     ['/admin/users', 'users', t('admin.nav.users')],
+    ['/admin/payments', 'landmark', t('admin.nav.payments')],
     ['group' => t('admin.nav.catalog')],
     ['/admin/categories', 'folder', t('admin.nav.categories')],
     ['/admin/professions', 'briefcase', t('admin.nav.professions')],

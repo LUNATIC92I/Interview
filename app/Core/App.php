@@ -43,7 +43,10 @@ final class App
             [$handler, $params, $middleware] = $match;
             $request->params = $params;
 
-            if (in_array($request->method, ['POST', 'PUT', 'PATCH', 'DELETE'], true) && !Csrf::verify($request)) {
+            // Payment provider webhooks come from outside the browser session: they are authenticated by their
+            // own signature (see PaymentService::handleWebhook) instead of the CSRF token.
+            $isWebhook = str_starts_with($request->path, '/webhooks/');
+            if (!$isWebhook && in_array($request->method, ['POST', 'PUT', 'PATCH', 'DELETE'], true) && !Csrf::verify($request)) {
                 Logger::security('CSRF token mismatch', ['path' => $request->path, 'ip' => $request->ip()]);
                 throw new HttpException(419);
             }
