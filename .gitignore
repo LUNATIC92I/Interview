@@ -1,0 +1,14 @@
+/vendor/
+.env
+/storage/logs/*
+!/storage/logs/.gitkeep
+!/storage/logs/.htaccess
+/storage/reports/*
+!/storage/reports/.gitkeep
+!/storage/reports/.htaccess
+/storage/cache/*
+!/storage/cache/.gitkeep
+!/storage/cache/.htaccess
+/tests/output/
+/node_modules/
+.DS_Store

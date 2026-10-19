@@ -1,0 +1,100 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * InterviewPro console.
+ *   php bin/console migrate            Apply pending migrations
+ *   php bin/console migrate:status     List migrations
+ *   php bin/console seed               Load reference data (roles, catalogue, questions, scenarios). Idempotent.
+ *   php bin/console demo:seed          Create a demonstration candidate with sample sessions
+ *   php bin/console admin:create       Create an administrator (interactive, password never echoed)
+ *   php bin/console key:generate       Print a random APP_KEY value
+ *   php bin/console cleanup            Purge expired tokens and rate limit windows
+ */
+
+if (PHP_SAPI !== 'cli') {
+    exit(1);
+}
+
+require dirname(__DIR__) . '/app/bootstrap.php';
+
+use App\Core\Database;
+use App\Services\Migrator;
+use App\Services\UserService;
+
+$command = $argv[1] ?? 'help';
+$out = static fn (string $m) => fwrite(STDOUT, $m . PHP_EOL);
+$err = static fn (string $m) => fwrite(STDERR, $m . PHP_EOL);
+
+try {
+    switch ($command) {
+        case 'migrate':
+            $done = (new Migrator(BASE_PATH . '/database/migrations'))->migrate(static fn ($v) => $out("Migrated: $v"));
+            $out($done ? 'Done.' : 'Nothing to migrate.');
+            break;
+
+        case 'migrate:status':
+            foreach ((new Migrator(BASE_PATH . '/database/migrations'))->status() as $v => $at) {
+                $out(str_pad($v, 45) . ($at ? "applied $at" : 'pending'));
+            }
+            break;
+
+        case 'seed':
+            require BASE_PATH . '/database/seeders/DatabaseSeeder.php';
+            (new DatabaseSeeder($out))->run();
+            break;
+
+        case 'demo:seed':
+            require BASE_PATH . '/database/seeders/DemoSeeder.php';
+            (new DemoSeeder($out))->run();
+            break;
+
+        case 'admin:create':
+            $email = $argv[2] ?? null;
+            if ($email === null) {
+                fwrite(STDOUT, 'Administrator e-mail: ');
+                $email = trim((string) fgets(STDIN));
+            }
+            fwrite(STDOUT, 'Display name [Administrator]: ');
+            $name = trim((string) fgets(STDIN)) ?: 'Administrator';
+            $password = getenv('ADMIN_PASSWORD') ?: null;
+            if ($password === null) {
+                fwrite(STDOUT, 'Password (min. 10 characters, letters and digits): ');
+                if (DIRECTORY_SEPARATOR === '/' && posix_isatty(STDIN)) {
+                    shell_exec('stty -echo');
+                }
+                $password = trim((string) fgets(STDIN));
+                if (DIRECTORY_SEPARATOR === '/' && posix_isatty(STDIN)) {
+                    shell_exec('stty echo');
+                }
+                fwrite(STDOUT, PHP_EOL);
+            }
+            $errors = UserService::validatePassword($password);
+            if ($errors || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $err('Invalid e-mail or password (min. 10 characters with letters and digits).');
+                exit(1);
+            }
+            $id = UserService::createAdmin($email, $name, $password);
+            $out("Administrator #$id created for $email.");
+            break;
+
+        case 'key:generate':
+            $out(bin2hex(random_bytes(32)));
+            break;
+
+        case 'cleanup':
+            Database::query('DELETE FROM password_reset_tokens WHERE expires_at < :d OR used_at IS NOT NULL', ['d' => now()]);
+            Database::query('DELETE FROM email_verification_tokens WHERE expires_at < :d OR used_at IS NOT NULL', ['d' => now()]);
+            App\Services\RateLimiter::purge();
+            $out('Expired tokens and rate limit windows purged.');
+            break;
+
+        default:
+            $out(trim(substr((string) file_get_contents(__FILE__), strpos((string) file_get_contents(__FILE__), '/**'), 700)));
+    }
+} catch (App\Core\DatabaseUnavailableException $e) {
+    $err('Database unavailable: check DB_* settings in .env (' . ($e->getPrevious()?->getMessage() ?? '') . ')');
+    exit(2);
+}
