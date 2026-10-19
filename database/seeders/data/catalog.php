@@ -11,7 +11,8 @@ return [
         'management-projects' => ['clipboard-list', 3, ['Management et gestion de projet', 'Pilotage de projets, de produits, d\'opérations et de stratégie.'], ['Management and project management', 'Leading projects, products, operations and strategy.']],
         'hr-communication' => ['megaphone', 4, ['Ressources humaines, communication et vente', 'Recrutement, RH, marketing, communication et développement commercial.'], ['HR, communication and sales', 'Recruitment, HR, marketing, communication and business development.']],
         'public-international' => ['globe', 5, ['Secteur public et organisations internationales', 'Programmes, politiques publiques, coopération et recrutements internationaux.'], ['Public sector and international organisations', 'Programmes, public policy, cooperation and international recruitment.']],
-        'other-sectors' => ['building', 6, ['Autres secteurs', 'Ingénierie, logistique, achats, enseignement, droit et santé.'], ['Other sectors', 'Engineering, logistics, procurement, teaching, law and health.']],
+        'other-sectors' => ['building', 6, ['Autres secteurs', 'Ingénierie, BTP, industrie, logistique, achats, enseignement, droit, santé et langues.'], ['Other sectors', 'Engineering, construction, industry, logistics, procurement, teaching, law, health and languages.']],
+        'services-trade' => ['shopping-cart', 7, ['Commerce, accueil et services', 'Vente, relation client, hôtellerie, immobilier et assistanat.'], ['Retail, hospitality and services', 'Sales, customer service, hospitality, real estate and executive support.']],
     ],
 
     'professions' => [
@@ -179,5 +180,88 @@ return [
         'health-professional' => ['other-sectors', 'stethoscope', 1, 5, ['health_context', 'teamwork', 'ethics_integrity', 'stress_management'],
             ['Médecin ou professionnel de santé (entretien non clinique)', 'Prépare les entretiens de recrutement : motivation, travail en équipe, éthique, organisation.', 'Présenter son parcours et son projet|Illustrer le travail en équipe pluridisciplinaire|Démontrer éthique et confidentialité|Montrer sa gestion de la charge'],
             ['Doctor or health professional (non clinical interview)', 'Prepares recruitment interviews: motivation, teamwork, ethics, organisation.', 'Present background and career plan|Illustrate multidisciplinary teamwork|Demonstrate ethics and confidentiality|Show workload management']],
+
+        // Métiers complémentaires : informatique
+        'helpdesk-technician' => ['it-security', 'help-circle', 1, 3, ['customer_orientation', 'systems_networks', 'communication', 'problem_solving'],
+            ['Technicien support informatique', 'Assiste les utilisateurs et résout les incidents du poste de travail.', 'Prendre en charge les demandes des utilisateurs|Diagnostiquer et résoudre les incidents|Installer et configurer les postes|Documenter les solutions dans l\'outil de ticketing'],
+            ['IT support technician', 'Helps users and resolves workstation incidents.', 'Handle user requests|Diagnose and fix incidents|Install and configure workstations|Document solutions in the ticketing tool']],
+        'mobile-developer' => ['it-security', 'code', 1, 4, ['software_engineering', 'technical_expertise', 'customer_orientation', 'problem_solving'],
+            ['Développeur mobile', 'Conçoit des applications iOS et Android fiables et agréables à utiliser.', 'Développer les écrans et la logique applicative|Intégrer les API et le mode hors ligne|Optimiser performances et consommation|Publier sur les magasins d\'applications'],
+            ['Mobile developer', 'Builds reliable and pleasant iOS and Android applications.', 'Build screens and app logic|Integrate APIs and offline mode|Optimise performance and battery use|Publish to app stores']],
+        'qa-tester' => ['it-security', 'list-checks', 1, 4, ['software_engineering', 'analytical_thinking', 'communication', 'organisation'],
+            ['Testeur QA', 'Garantit la qualité des logiciels par des tests manuels et automatisés.', 'Rédiger les plans et cas de test|Exécuter les tests et signaler les anomalies|Automatiser les tests de non-régression|Suivre la qualité avant chaque livraison'],
+            ['QA tester', 'Ensures software quality through manual and automated testing.', 'Write test plans and cases|Run tests and report defects|Automate regression tests|Track quality before each release']],
+        'ux-ui-designer' => ['it-security', 'compass', 1, 4, ['customer_orientation', 'communication', 'analytical_thinking', 'teamwork'],
+            ['Designer UX/UI', 'Conçoit des parcours et des interfaces utiles, simples et accessibles.', 'Mener la recherche utilisateur|Concevoir parcours, maquettes et prototypes|Tester avec les utilisateurs|Maintenir le système de design'],
+            ['UX/UI designer', 'Designs useful, simple and accessible journeys and interfaces.', 'Run user research|Design flows, mock-ups and prototypes|Test with users|Maintain the design system']],
+        'network-engineer' => ['it-security', 'network', 2, 4, ['systems_networks', 'security_mindset', 'technical_expertise', 'problem_solving'],
+            ['Ingénieur réseaux', 'Conçoit et fait évoluer les réseaux d\'entreprise.', 'Concevoir l\'architecture LAN, WAN et Wi-Fi|Configurer routeurs, commutateurs et pare-feu|Superviser et optimiser les performances|Gérer les incidents de niveau 3'],
+            ['Network engineer', 'Designs and evolves enterprise networks.', 'Design LAN, WAN and Wi-Fi architecture|Configure routers, switches and firewalls|Monitor and optimise performance|Handle level 3 incidents']],
+        'ml-engineer' => ['it-security', 'activity', 2, 4, ['data_analysis', 'software_engineering', 'cloud_devops', 'ethics_integrity'],
+            ['Ingénieur machine learning', 'Met en production et surveille des modèles d\'apprentissage automatique.', 'Industrialiser l\'entraînement des modèles|Déployer les modèles en production|Surveiller la dérive et la qualité|Garantir la traçabilité et l\'équité'],
+            ['Machine learning engineer', 'Puts machine learning models into production and monitors them.', 'Industrialise model training|Deploy models to production|Monitor drift and quality|Ensure traceability and fairness']],
+
+        // Métiers complémentaires : finance et administration
+        'compliance-officer' => ['finance-admin', 'shield-check', 2, 5, ['risk_compliance', 'ethics_integrity', 'communication', 'analytical_thinking'],
+            ['Responsable conformité', 'Veille au respect des réglementations et prévient les risques de non-conformité.', 'Assurer la veille réglementaire|Rédiger procédures et contrôles|Former et sensibiliser les équipes|Traiter les alertes et rendre compte'],
+            ['Compliance officer', 'Ensures regulations are followed and prevents compliance risks.', 'Monitor regulatory changes|Write procedures and controls|Train and raise awareness|Handle alerts and report']],
+        'payroll-specialist' => ['finance-admin', 'calculator', 1, 4, ['technical_expertise', 'risk_compliance', 'organisation', 'ethics_integrity'],
+            ['Gestionnaire de paie', 'Établit les salaires et les déclarations sociales dans le respect des règles.', 'Collecter les éléments variables de paie|Calculer et contrôler les bulletins|Établir les déclarations sociales|Répondre aux questions des salariés'],
+            ['Payroll specialist', 'Produces payslips and social declarations in line with the rules.', 'Collect variable pay items|Calculate and check payslips|File social security declarations|Answer employee questions']],
+
+        // Métiers complémentaires : management
+        'scrum-master' => ['management-projects', 'rotate-ccw', 2, 4, ['project_methodology', 'teamwork', 'conflict_management', 'change_management'],
+            ['Scrum Master', 'Accompagne une équipe agile pour qu\'elle livre de la valeur de façon régulière.', 'Animer les cérémonies agiles|Lever les obstacles de l\'équipe|Favoriser l\'amélioration continue|Accompagner l\'organisation dans l\'agilité'],
+            ['Scrum Master', 'Coaches an agile team to deliver value regularly.', 'Facilitate agile events|Remove team impediments|Foster continuous improvement|Support the organisation\'s agile adoption']],
+        'quality-manager' => ['management-projects', 'award', 2, 5, ['risk_compliance', 'analytical_thinking', 'change_management', 'communication'],
+            ['Responsable qualité', 'Pilote le système de management de la qualité et l\'amélioration continue.', 'Maintenir le système qualité et les certifications|Organiser les audits internes|Analyser les non-conformités|Piloter les actions d\'amélioration'],
+            ['Quality manager', 'Runs the quality management system and continuous improvement.', 'Maintain the quality system and certifications|Organise internal audits|Analyse non-conformities|Drive improvement actions']],
+
+        // Métiers complémentaires : ressources humaines
+        'training-officer' => ['hr-communication', 'book-open', 1, 4, ['pedagogy', 'stakeholder_management', 'organisation', 'communication'],
+            ['Chargé de formation', 'Construit et déploie le plan de développement des compétences.', 'Recueillir les besoins de formation|Construire le plan de formation|Sélectionner et suivre les prestataires|Évaluer l\'efficacité des formations'],
+            ['Training officer', 'Builds and runs the skills development plan.', 'Gather training needs|Build the training plan|Select and manage providers|Evaluate training effectiveness']],
+
+        // Métiers complémentaires : secteur public et international
+        'humanitarian-coordinator' => ['public-international', 'globe', 2, 5, ['multicultural', 'operations_logistics', 'stress_management', 'ethics_integrity'],
+            ['Coordinateur de projets humanitaires', 'Coordonne des programmes d\'aide sur le terrain dans des contextes difficiles.', 'Évaluer les besoins des populations|Coordonner équipes et partenaires|Garantir la sécurité et la redevabilité|Rendre compte aux bailleurs'],
+            ['Humanitarian project coordinator', 'Coordinates field aid programmes in difficult settings.', 'Assess population needs|Coordinate teams and partners|Ensure safety and accountability|Report to donors']],
+
+        // Métiers complémentaires : autres secteurs
+        'nurse' => ['other-sectors', 'stethoscope', 1, 4, ['health_context', 'teamwork', 'stress_management', 'communication'],
+            ['Infirmier (entretien non clinique)', 'Prépare les entretiens de recrutement infirmier : organisation, équipe, relation patient, éthique.', 'Présenter son parcours et ses services|Organiser une charge de soins variable|Travailler avec l\'équipe pluridisciplinaire|Respecter confidentialité et traçabilité'],
+            ['Nurse (non clinical interview)', 'Prepares nursing recruitment interviews: organisation, teamwork, patient relations, ethics.', 'Present background and wards|Organise a variable workload|Work with the multidisciplinary team|Respect confidentiality and record keeping']],
+        'maintenance-technician' => ['other-sectors', 'sliders', 1, 4, ['engineering_methods', 'problem_solving', 'risk_compliance', 'organisation'],
+            ['Technicien de maintenance industrielle', 'Assure la disponibilité des équipements de production.', 'Réaliser la maintenance préventive|Diagnostiquer et réparer les pannes|Respecter les consignes de sécurité|Proposer des améliorations'],
+            ['Industrial maintenance technician', 'Keeps production equipment available.', 'Perform preventive maintenance|Diagnose and repair breakdowns|Follow safety rules|Suggest improvements']],
+        'site-manager' => ['other-sectors', 'building', 2, 5, ['project_methodology', 'people_management', 'risk_compliance', 'negotiation'],
+            ['Conducteur de travaux', 'Pilote un ou plusieurs chantiers en coût, délai, qualité et sécurité.', 'Préparer et planifier le chantier|Encadrer équipes et sous-traitants|Suivre le budget et les achats|Garantir sécurité et qualité'],
+            ['Construction site manager', 'Runs one or more sites on cost, time, quality and safety.', 'Prepare and plan the site|Manage crews and subcontractors|Track budget and purchasing|Ensure safety and quality']],
+        'supply-chain-manager' => ['other-sectors', 'truck', 3, 5, ['operations_logistics', 'data_analysis', 'stakeholder_management', 'decision_making'],
+            ['Responsable supply chain', 'Optimise les flux de l\'approvisionnement à la livraison.', 'Piloter la planification et les stocks|Coordonner achats, production et transport|Suivre les indicateurs de service et de coût|Sécuriser la chaîne face aux aléas'],
+            ['Supply chain manager', 'Optimises flows from sourcing to delivery.', 'Drive planning and inventory|Coordinate purchasing, production and transport|Track service and cost KPIs|Make the chain resilient']],
+        'architect' => ['other-sectors', 'compass', 1, 5, ['engineering_methods', 'customer_orientation', 'project_methodology', 'communication'],
+            ['Architecte', 'Conçoit des bâtiments et suit leur réalisation avec le maître d\'ouvrage.', 'Analyser le programme et le site|Concevoir esquisses et projet|Déposer les autorisations d\'urbanisme|Suivre le chantier'],
+            ['Architect', 'Designs buildings and oversees their construction with the client.', 'Analyse the brief and the site|Produce sketches and the design|Obtain planning permission|Oversee construction']],
+        'translator-interpreter' => ['other-sectors', 'languages', 1, 4, ['communication', 'multicultural', 'organisation', 'ethics_integrity'],
+            ['Traducteur interprète', 'Transpose fidèlement écrits et discours d\'une langue à une autre.', 'Traduire et relire des documents|Interpréter en réunion ou en conférence|Constituer des glossaires|Respecter délais et confidentialité'],
+            ['Translator and interpreter', 'Faithfully renders texts and speech from one language into another.', 'Translate and proofread documents|Interpret in meetings or conferences|Build glossaries|Meet deadlines and confidentiality']],
+
+        // Commerce, accueil et services
+        'sales-associate' => ['services-trade', 'shopping-cart', 1, 3, ['customer_orientation', 'commercial_acumen', 'communication', 'teamwork'],
+            ['Conseiller de vente', 'Accueille, conseille et fidélise les clients en magasin.', 'Accueillir et identifier les besoins|Conseiller et conclure la vente|Mettre en valeur les produits|Contribuer aux objectifs du magasin'],
+            ['Sales associate', 'Welcomes, advises and retains in-store customers.', 'Welcome customers and identify needs|Advise and close the sale|Merchandise products|Contribute to store targets']],
+        'customer-service-advisor' => ['services-trade', 'message-square', 1, 3, ['customer_orientation', 'communication', 'stress_management', 'problem_solving'],
+            ['Conseiller relation client', 'Répond aux demandes et réclamations des clients par téléphone, courriel ou messagerie.', 'Traiter les demandes à distance|Résoudre les réclamations|Tracer les échanges dans le CRM|Remonter les dysfonctionnements'],
+            ['Customer service advisor', 'Handles customer requests and complaints by phone, email or chat.', 'Handle remote requests|Resolve complaints|Log interactions in the CRM|Escalate recurring issues']],
+        'hotel-receptionist' => ['services-trade', 'home', 1, 3, ['customer_orientation', 'multicultural', 'organisation', 'stress_management'],
+            ['Réceptionniste en hôtellerie', 'Accueille les clients et gère les arrivées, départs et réservations.', 'Accueillir et informer les clients|Gérer arrivées, départs et facturation|Suivre réservations et disponibilités|Traiter les demandes particulières'],
+            ['Hotel receptionist', 'Welcomes guests and manages check-ins, check-outs and bookings.', 'Welcome and inform guests|Handle check-in, check-out and billing|Manage bookings and availability|Deal with special requests']],
+        'real-estate-agent' => ['services-trade', 'home', 1, 4, ['commercial_acumen', 'negotiation', 'customer_orientation', 'ethics_integrity'],
+            ['Agent immobilier', 'Accompagne vendeurs, acquéreurs et locataires dans leurs projets immobiliers.', 'Prospecter et rentrer des mandats|Estimer les biens|Organiser les visites|Négocier et suivre jusqu\'à la signature'],
+            ['Real estate agent', 'Supports sellers, buyers and tenants in their property projects.', 'Prospect and win listings|Value properties|Organise viewings|Negotiate and follow through to signing']],
+        'executive-assistant' => ['services-trade', 'clipboard-list', 1, 4, ['organisation', 'communication', 'ethics_integrity', 'initiative'],
+            ['Assistant de direction', 'Organise l\'activité d\'un dirigeant et fluidifie la communication.', 'Gérer agenda et déplacements|Préparer réunions et dossiers|Filtrer et traiter les sollicitations|Assurer le suivi des décisions'],
+            ['Executive assistant', 'Organises an executive\'s work and smooths communication.', 'Manage diary and travel|Prepare meetings and briefs|Filter and handle requests|Follow up on decisions']],
     ],
 ];

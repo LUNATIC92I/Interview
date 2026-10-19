@@ -1,6 +1,6 @@
 # InterviewPro
 
-Plateforme web bilingue (français / anglais) de simulation d'entretiens d'embauche : catalogue de 51 métiers, banque de 198 questions rédigées dans les deux langues, 15 scénarios, moteur de simulation en 5 modes, évaluation structurée sur 100, tableau de bord de progression, rapport PDF et back office complet.
+Plateforme web bilingue (français / anglais) de simulation d'entretiens d'embauche : catalogue de 74 métiers répartis en 7 catégories, banque de 267 questions rédigées dans les deux langues, 15 scénarios, moteur de simulation en 5 modes, évaluation structurée sur 100, tableau de bord de progression, rapport PDF et back office complet.
 
 Socle technique imposé : **PHP 8.2+ (MVC sans framework), MySQL 8 / MariaDB 10.6+ via PDO, HTML5, CSS3 et JavaScript natif**. Aucune dépendance Composer ni npm n'est nécessaire à l'exécution : l'application tourne sur un hébergement PHP/MySQL classique.
 
@@ -28,6 +28,8 @@ Socle technique imposé : **PHP 8.2+ (MVC sans framework), MySQL 8 / MariaDB 10.
 **Espace public**
 - Page d'accueil (accroche FR/EN, composition visuelle HTML/CSS d'une simulation, fonctionnalités, catégories, étapes, avantages, FAQ, appel à l'action). Aucune statistique, témoignage ni certification inventés.
 - Catalogue des métiers avec recherche, filtre par catégorie et pagination serveur ; fiche métier (responsabilités, compétences recherchées, niveaux, exemples de questions, scénarios disponibles, métiers proches).
+- Les 51 métiers du cahier des charges, complétés par 23 métiers courants : technicien support informatique, développeur mobile, testeur QA, designer UX/UI, ingénieur réseaux, ingénieur machine learning, responsable conformité, gestionnaire de paie, Scrum Master, responsable qualité, chargé de formation, coordinateur de projets humanitaires, infirmier (entretien non clinique), technicien de maintenance industrielle, conducteur de travaux, responsable supply chain, architecte, traducteur interprète, et une catégorie « Commerce, accueil et services » (conseiller de vente, conseiller relation client, réceptionniste en hôtellerie, agent immobilier, assistant de direction). Chaque métier ajouté dispose de sa fiche et de 3 questions bilingues propres, en plus des questions de sa catégorie et des questions générales.
+- Sur une installation existante, `php bin/console seed` ajoute les nouveaux métiers et questions sans toucher aux données déjà présentes.
 - Pages Simulations (types et modes), Fonctionnalités, Conseils (contenus pédagogiques), Politique de confidentialité.
 - Sélecteur **FR | EN** toujours visible ; le changement de langue conserve la session, les brouillons et la progression.
 
@@ -99,7 +101,7 @@ php bin/console key:generate        # copier la valeur dans APP_KEY
 
 # 3. Schéma et contenu
 php bin/console migrate             # applique les migrations en attente
-php bin/console seed                # référentiels, 51 métiers, 198 questions FR/EN, 15 scénarios (idempotent)
+php bin/console seed                # référentiels, 74 métiers, 267 questions FR/EN, 15 scénarios (idempotent)
 php bin/console admin:create        # e-mail, nom, mot de passe saisi sans écho
 php bin/console demo:seed           # facultatif : candidat de démonstration (mot de passe affiché une fois)
 

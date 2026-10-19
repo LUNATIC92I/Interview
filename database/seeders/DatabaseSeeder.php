@@ -31,7 +31,7 @@ final class DatabaseSeeder
             $this->reference(require __DIR__ . '/data/reference.php');
             $this->catalog(require __DIR__ . '/data/catalog.php');
             $typeRubrics = (require __DIR__ . '/data/reference.php')['type_rubrics'];
-            foreach (['questions_generic', 'questions_it', 'questions_finance_management', 'questions_hr_public', 'questions_other'] as $file) {
+            foreach (['questions_generic', 'questions_it', 'questions_finance_management', 'questions_hr_public', 'questions_other', 'questions_extended_it_business', 'questions_extended_sectors'] as $file) {
                 foreach (require __DIR__ . '/data/' . $file . '.php' as $q) {
                     $this->question($q, $typeRubrics);
                 }
