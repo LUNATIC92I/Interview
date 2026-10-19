@@ -1,6 +1,6 @@
 <section class="hero">
     <div class="container hero-grid">
-        <div class="reveal">
+        <div class="hero-copy">
             <p class="eyebrow"><?= e(t('home.eyebrow')) ?></p>
             <h1><?= e(t('home.title_1')) ?> <span class="accent"><?= e(t('home.title_2')) ?></span> <?= e(t('home.title_3')) ?></h1>
             <p class="lead"><?= e(t('home.subtitle')) ?></p>
@@ -14,7 +14,7 @@
                 <li><?= icon('check-circle', 18) ?><?= e(t('home.point_3')) ?></li>
             </ul>
         </div>
-        <div class="mock reveal" aria-hidden="true">
+        <div class="mock hero-visual" aria-hidden="true">
             <div class="mock-skills"><?= icon('check-circle', 16) ?><?= e(t('home.mock.saved')) ?></div>
             <div class="mock-window">
                 <div class="mock-bar"><span class="mock-dots"><i></i><i></i><i></i></span><span><?= e(t('home.mock.window')) ?></span></div>

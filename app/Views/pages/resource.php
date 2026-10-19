@@ -1,3 +1,4 @@
+<div class="read-progress" aria-hidden="true"></div>
 <section class="page-header"><div class="container container-narrow">
     <nav class="breadcrumb" aria-label="<?= e(t('nav.breadcrumb')) ?>"><a href="<?= e(url('/resources')) ?>"><?= e(t('nav.resources')) ?></a><?= icon('chevron-right', 14) ?><span><?= e($item['title']) ?></span></nav>
     <h1><?= e($item['title']) ?></h1>

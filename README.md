@@ -34,6 +34,10 @@ Socle technique imposé : **PHP 8.2+ (MVC sans framework), MySQL 8 / MariaDB 10.
 **Comptes**
 - Inscription, connexion, déconnexion, confirmation d'adresse (si un envoi de courriels est configuré), mot de passe oublié avec jeton à usage unique valable 60 min, profil, préférences (langue, mode par défaut, réduction des animations), changement de mot de passe, historique des connexions (IP tronquée), suppression définitive du compte et de toutes les données associées.
 
+**Animations**
+- Système de mouvement unique dans `app.css` (jetons `--dur*`, `--ease*`) : entrée échelonnée du hero, apparition au défilement avec variantes (`data-anim="left|right|scale|fade"`) et décalage automatique entre éléments voisins, survols des cartes, boutons et liens, ombre de l'en-tête au défilement, barre de lecture sur les articles (animation pilotée par le défilement), transitions entre pages (View Transitions, ignorées par les navigateurs non compatibles).
+- Le back office et l'écran d'entretien restent volontairement sobres. Tout est désactivé avec `prefers-reduced-motion` ou la préférence « réduire les animations » du compte, et rien n'est animé à l'impression.
+
 **Moteur de simulation**
 - Paramètres : métier, niveau (étudiant, débutant, intermédiaire, senior, manager), 14 types d'entretien, langue, difficulté (5 niveaux), durée, nombre de questions, mode, scénario facultatif.
 - Modes : **Entraînement** (conseil + retour + réponse indicative après chaque question), **Réaliste** (retour à la fin), **Chronométré** (temps par question = durée / nombre de questions), **Intensif** (difficulté ≥ 4, pas de saut, relance systématique, temps réduit), **Personnalisé** (saut, retour, pause, chronomètre, relances, retour immédiat au choix).

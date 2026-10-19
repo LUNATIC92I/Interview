@@ -126,8 +126,18 @@
       details.addEventListener('keydown', function (e) { if (e.key === 'Escape') { details.removeAttribute('open'); details.querySelector('summary').focus(); } });
     });
 
-    // Reveal on scroll
+    // Reveal on scroll. Besides elements marked .reveal, common content blocks of the public and
+    // candidate pages are revealed automatically; siblings get an index (--i) for staggering.
+    var main = document.querySelector('main:not(.admin-main)');
+    if (main) {
+      main.querySelectorAll('.section-head, .grid > .card, .grid > article, .steps > .step, .faq, .stats > *, .page-header .container > *')
+        .forEach(function (el) { if (!el.closest('.hero, .interview-shell, dialog') && !el.classList.contains('reveal')) { el.classList.add('reveal'); } });
+    }
     var reveals = document.querySelectorAll('.reveal');
+    reveals.forEach(function (el) {
+      var siblings = el.parentElement ? Array.prototype.filter.call(el.parentElement.children, function (c) { return c.classList.contains('reveal'); }) : [el];
+      el.style.setProperty('--i', String(Math.min(siblings.indexOf(el), 6)));
+    });
     if (reduceMotion || !('IntersectionObserver' in window)) {
       reveals.forEach(function (el) { el.classList.add('is-visible'); });
     } else {
@@ -136,7 +146,15 @@
           if (entry.isIntersecting) { entry.target.classList.add('is-visible'); io.unobserve(entry.target); }
         });
       }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-      reveals.forEach(function (el, i) { el.style.transitionDelay = Math.min(i % 6, 5) * 60 + 'ms'; io.observe(el); });
+      reveals.forEach(function (el) { io.observe(el); });
+    }
+
+    // Header elevation once the page scrolls
+    var header = document.querySelector('.site-header');
+    if (header) {
+      var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 8); };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
     }
 
     // Animated counters

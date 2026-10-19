@@ -29,6 +29,12 @@
   --focus: 0 0 0 3px rgba(22, 184, 176, .45);
   --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ease: cubic-bezier(.2, .7, .2, 1);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --dur-fast: 160ms;
+  --dur: 280ms;
+  --dur-slow: 700ms;
+  --stagger: 70ms;
   --header-h: 64px;
 }
 
@@ -461,10 +467,88 @@ dialog.modal[open]::backdrop { animation: fadeIn .25s ease; }
 main { display: block; }
 main:focus { outline: none; }
 
-/* Reveal animations */
-.reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
-.reveal.is-visible { opacity: 1; transform: none; }
+/* Motion system
+   Tokens above (--dur*, --ease*) drive every animation. Content enters with one of a few
+   variants (data-anim), siblings are staggered through --i set by app.js, and everything
+   collapses to a static layout under reduced motion. */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); transition-delay: calc(var(--i, 0) * var(--stagger)); will-change: opacity, transform; }
+.reveal[data-anim="left"] { transform: translateX(-24px); }
+.reveal[data-anim="right"] { transform: translateX(24px); }
+.reveal[data-anim="scale"] { transform: scale(.96); }
+.reveal[data-anim="fade"] { transform: none; }
+.reveal.is-visible { opacity: 1; transform: none; will-change: auto; }
 .no-js .reveal { opacity: 1; transform: none; }
+
+/* Hero entrance: copy lines rise one after another, the mock composition settles in */
+.hero { position: relative; isolation: isolate; }
+.hero::before, .hero::after { content: ""; position: absolute; z-index: -1; border-radius: 50%; filter: blur(60px); opacity: .55; pointer-events: none; }
+.hero::before { width: 420px; height: 420px; background: radial-gradient(circle, #CDF3F0 0%, transparent 70%); top: -140px; right: -80px; animation: drift 18s var(--ease-in-out) infinite alternate; }
+.hero::after { width: 340px; height: 340px; background: radial-gradient(circle, #E5FAF8 0%, transparent 70%); bottom: -160px; left: -100px; animation: drift 22s var(--ease-in-out) infinite alternate-reverse; }
+.hero-copy > * { animation: rise var(--dur-slow) var(--ease-out) both; }
+.hero-copy > :nth-child(1) { animation-delay: 60ms; }
+.hero-copy > :nth-child(2) { animation-delay: 140ms; }
+.hero-copy > :nth-child(3) { animation-delay: 220ms; }
+.hero-copy > :nth-child(4) { animation-delay: 300ms; }
+.hero-copy > :nth-child(5) { animation-delay: 380ms; }
+.hero-points li { animation: rise var(--dur-slow) var(--ease-out) both; }
+.hero-points li:nth-child(1) { animation-delay: 460ms; }
+.hero-points li:nth-child(2) { animation-delay: 530ms; }
+.hero-points li:nth-child(3) { animation-delay: 600ms; }
+.hero-visual { animation: settle 1s var(--ease-out) 200ms both; transform-origin: 50% 60%; }
+.hero-visual .mock-skills { animation: pop .5s var(--ease-out) 900ms both, float 7s ease-in-out 1.4s infinite reverse; }
+.hero-visual .mock-score { animation: pop .5s var(--ease-out) 1050ms both, float 6s ease-in-out 1.6s infinite; }
+.hero h1 .accent { background: linear-gradient(90deg, var(--primary-darker), var(--primary-dark), var(--primary-darker)); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sheen 6s var(--ease-in-out) 1s infinite; }
+@media (forced-colors: active) { .hero h1 .accent { color: CanvasText; background: none; } }
+
+/* Interactive feedback */
+.btn:active:not(:disabled) { transform: translateY(1px) scale(.985); }
+.btn-primary .icon, .btn-secondary .icon { transition: transform var(--dur) var(--ease-out); }
+.btn-primary:hover .icon, .btn-secondary:hover .icon { transform: translateX(2px); }
+.card-hover .card-icon { transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
+.card-hover:hover .card-icon { background: var(--primary-darker); color: #fff; transform: translateY(-2px) rotate(-4deg); }
+.nav-links a { position: relative; transition: background-color var(--dur-fast), color var(--dur-fast); }
+.nav-links a::after { content: ""; position: absolute; left: .75rem; right: .75rem; bottom: 4px; height: 2px; border-radius: 2px; background: var(--primary-dark); transform: scaleX(0); transform-origin: left; transition: transform var(--dur) var(--ease-out); }
+.nav-links a:hover::after, .nav-links a[aria-current="page"]::after { transform: scaleX(1); }
+.site-header { transition: box-shadow var(--dur) var(--ease-out), background-color var(--dur); }
+.site-header.is-scrolled { box-shadow: 0 6px 20px rgba(23, 43, 58, .08); background: rgba(255, 255, 255, .98); }
+.step { transition: border-color var(--dur), box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
+.step:hover { border-color: var(--primary); box-shadow: var(--shadow); transform: translateY(-2px); }
+.step::before { transition: background-color var(--dur), color var(--dur); }
+.step:hover::before { background: var(--primary-darker); color: #fff; }
+.faq summary { transition: color var(--dur-fast); }
+.faq summary:hover { color: var(--primary-darker); }
+.faq details[open] .faq-body { animation: rise var(--dur) var(--ease-out); }
+.stat-value { transition: color var(--dur); }
+table tbody tr { transition: background-color var(--dur-fast); }
+
+/* Loading skeleton */
+.loading-block { position: relative; overflow: hidden; border-radius: var(--radius); }
+.loading-block::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(22, 184, 176, .08), transparent); transform: translateX(-100%); animation: shimmer 1.6s var(--ease-in-out) infinite; }
+
+/* Reading progress on articles (scroll driven where supported) */
+.read-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--primary); transform-origin: left; transform: scaleX(0); z-index: 70; display: none; }
+@supports (animation-timeline: scroll()) {
+  .read-progress { display: block; animation: readProgress linear both; animation-timeline: scroll(root); }
+}
+
+/* Page transitions between documents (Chromium, Safari 18+); ignored elsewhere */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root) { animation: pageOut 180ms var(--ease-in-out) both; }
+  ::view-transition-new(root) { animation: pageIn 320ms var(--ease-out) both; }
+  .site-header { view-transition-name: site-header; }
+}
+html.reduce-motion::view-transition-old(root), html.reduce-motion::view-transition-new(root) { animation: none; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes settle { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(-40px, 30px) scale(1.08); } }
+@keyframes sheen { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes shimmer { to { transform: translateX(100%); } }
+@keyframes readProgress { to { transform: scaleX(1); } }
+@keyframes pageOut { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } }
 
 @keyframes grow { from { width: 0; } }
 @keyframes ringIn { from { background: conic-gradient(var(--ring, var(--primary)) 0%, #E7EEF3 0); opacity: .4; } }
@@ -483,10 +567,13 @@ main:focus { outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-  .reveal { opacity: 1; transform: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .hero::before, .hero::after { animation: none; }
+  .read-progress { display: none; }
 }
 html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after { animation: none !important; transition: none !important; }
 html.reduce-motion .reveal { opacity: 1; transform: none; }
+html.reduce-motion .read-progress { display: none; }
 
 /* Print */
 @media print {
@@ -497,7 +584,8 @@ html.reduce-motion .reveal { opacity: 1; transform: none; }
   .answer-review { break-inside: avoid; }
   .container { max-width: none; padding: 0; }
   a { color: inherit; text-decoration: none; }
-  .progress-bar, .score-ring, .chart .line { animation: none !important; }
+  .progress-bar, .score-ring, .chart .line, .hero-copy > *, .hero-visual, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .read-progress { display: none !important; }
   .progress { border: 1px solid #CBD5E1; }
   .section, .page-header { padding: 12px 0; }
 }
