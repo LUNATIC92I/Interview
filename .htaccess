@@ -1,0 +1,8 @@
+# Fallback when the document root cannot be pointed to /public (shared hosting):
+# send everything to /public and refuse direct access to application folders.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(app|config|database|lang|routes|storage|tests|bin|vendor)(/|$) - [F,L]
+    RewriteRule ^\.env - [F,L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

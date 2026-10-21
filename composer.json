@@ -1,0 +1,27 @@
+{
+    "name": "interviewpro/platform",
+    "description": "InterviewPro: bilingual (FR/EN) job interview simulation platform built with PHP 8.2+, MySQL 8 and vanilla JavaScript.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*"
+    },
+    "suggest": {
+        "ext-intl": "Locale-aware date and number formatting (a fallback is used when missing)",
+        "ext-curl": "Required only when the optional language model evaluation is enabled"
+    },
+    "autoload": {
+        "psr-4": { "App\\": "app/" },
+        "files": ["app/Helpers/functions.php"]
+    },
+    "scripts": {
+        "test": "php tests/run.php",
+        "migrate": "php bin/console migrate",
+        "seed": "php bin/console seed"
+    },
+    "config": { "sort-packages": true }
+}
