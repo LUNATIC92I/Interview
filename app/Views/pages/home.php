@@ -16,7 +16,7 @@
         </div>
         <div class="mock hero-visual" aria-hidden="true">
             <div class="mock-skills"><?= icon('check-circle', 16) ?><?= e(t('home.mock.saved')) ?></div>
-            <div class="mock-window">
+            <div class="mock-window" data-tilt>
                 <div class="mock-bar"><span class="mock-dots"><i></i><i></i><i></i></span><span><?= e(t('home.mock.window')) ?></span></div>
                 <div class="mock-body">
                     <div class="mock-meta">
@@ -25,7 +25,7 @@
                         <span class="badge"><?= e(t('home.mock.question')) ?></span>
                     </div>
                     <p class="mock-question"><?= e(t('home.mock.text')) ?></p>
-                    <div class="mock-lines"><span></span><span></span><span></span><span class="typing"></span></div>
+                    <p class="mock-answer"><span data-typewriter="<?= e(t('home.mock.answer')) ?>"><?= e(t('home.mock.answer')) ?></span><i class="mock-caret"></i></p>
                     <div class="mock-footer">
                         <span class="mock-timer"><?= icon('timer', 16) ?>03:42</span>
                         <span><?= e(t('home.mock.progress')) ?></span>
@@ -35,7 +35,7 @@
             </div>
             <div class="mock-score">
                 <div class="row">
-                    <div class="score-ring sm success" style="--value:78"><div class="score-ring-value"><strong>78</strong></div></div>
+                    <div class="score-ring sm success" style="--value:78"><div class="score-ring-value"><strong data-count="78">78</strong></div></div>
                     <div class="mock-mini" style="flex:1">
                         <div class="meter"><span class="meter-label"><?= e(t('criteria.relevance')) ?></span><span class="meter-value">84</span><div class="progress"><div class="progress-bar" style="--value:84%"></div></div></div>
                         <div class="meter"><span class="meter-label"><?= e(t('criteria.structure')) ?></span><span class="meter-value">72</span><div class="progress"><div class="progress-bar" style="--value:72%"></div></div></div>
@@ -44,6 +44,19 @@
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<section class="stats-band" aria-label="<?= e(t('home.stats.label')) ?>">
+    <div class="container">
+        <dl class="stats-grid">
+            <?php foreach ([['briefcase', $counts['professions'], 'professions'], ['message-square', $counts['questions'], 'questions'], ['layers', count(\App\Models\Domain::INTERVIEW_TYPES), 'types'], ['sliders', count(\App\Models\Domain::MODES), 'modes']] as [$ic, $n, $key]): ?>
+                <div class="stats-item reveal">
+                    <dt><?= icon($ic, 20) ?><span><?= e(t('home.stats.' . $key)) ?></span></dt>
+                    <dd data-count="<?= (int) $n ?>"><?= (int) $n ?></dd>
+                </div>
+            <?php endforeach; ?>
+        </dl>
     </div>
 </section>
 

@@ -163,20 +163,71 @@
       onScroll();
     }
 
-    // Animated counters
-    document.querySelectorAll('[data-count]').forEach(function (el) {
+    // Animated counters, started when the figure scrolls into view
+    var countUp = function (el) {
       var target = parseInt(el.getAttribute('data-count'), 10) || 0;
       if (reduceMotion || target === 0) { return; }
       var start = null;
       var step = function (ts) {
         if (!start) { start = ts; }
-        var p = Math.min(1, (ts - start) / 900);
+        var p = Math.min(1, (ts - start) / 1100);
         el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
         if (p < 1) { requestAnimationFrame(step); }
       };
       el.textContent = '0';
       requestAnimationFrame(step);
+    };
+    var counters = document.querySelectorAll('[data-count]');
+    if (!reduceMotion && 'IntersectionObserver' in window) {
+      var countIo = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) { countIo.unobserve(entry.target); countUp(entry.target); }
+        });
+      }, { threshold: 0.4 });
+      counters.forEach(function (el) { el.textContent = '0'; countIo.observe(el); });
+    }
+
+    // Typed answer in the home page mock
+    document.querySelectorAll('[data-typewriter]').forEach(function (el) {
+      var text = el.getAttribute('data-typewriter') || '';
+      if (reduceMotion) { return; }
+      el.textContent = '';
+      var i = 0;
+      var tick = function () {
+        i += 1;
+        el.textContent = text.slice(0, i);
+        if (i < text.length) { setTimeout(tick, text.charAt(i - 1) === ' ' ? 45 : 24); }
+      };
+      setTimeout(tick, 1300);
     });
+
+    // Pointer feedback (fine pointers only): card spotlight and slight tilt of the hero mock
+    var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (finePointer && !reduceMotion) {
+      document.querySelectorAll('.card-hover').forEach(function (card) {
+        card.addEventListener('pointermove', function (e) {
+          var r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+          card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+        });
+      });
+      document.querySelectorAll('[data-tilt]').forEach(function (el) {
+        var area = el.closest('.hero') || el;
+        area.addEventListener('pointermove', function (e) {
+          var r = el.getBoundingClientRect();
+          var x = (e.clientX - (r.left + r.width / 2)) / r.width;
+          var y = (e.clientY - (r.top + r.height / 2)) / r.height;
+          el.classList.add('is-tilting');
+          el.style.setProperty('--ry', (Math.max(-1, Math.min(1, x)) * 5).toFixed(2) + 'deg');
+          el.style.setProperty('--rx', (Math.max(-1, Math.min(1, -y)) * 4).toFixed(2) + 'deg');
+        });
+        area.addEventListener('pointerleave', function () {
+          el.classList.remove('is-tilting');
+          el.style.setProperty('--rx', '0deg');
+          el.style.setProperty('--ry', '0deg');
+        });
+      });
+    }
 
     // Confirmation before sensitive form submissions
     document.querySelectorAll('form[data-confirm]').forEach(function (form) {

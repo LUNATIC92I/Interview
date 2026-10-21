@@ -80,8 +80,9 @@ return [
         'point_1' => ":count métiers couverts, de l'informatique aux organisations internationales",
         'point_2' => ":count questions rédigées en français et en anglais",
         'point_3' => "Évaluation par grilles transparentes et rapport PDF",
+        'stats' => ['professions' => "métiers", 'questions' => "questions bilingues", 'types' => "types d'entretien", 'modes' => "modes de simulation", 'label' => "Le contenu de la plateforme en chiffres"],
         'mock' => ['window' => "Simulation en cours", 'profession' => "Analyste SOC", 'question' => "Question 3 sur 8",
-            'text' => "Comment distinguez-vous une activité malveillante d'un faux positif ?", 'progress' => "Sauvegarde automatique", 'saved' => "Réponse enregistrée"],
+            'text' => "Comment distinguez-vous une activité malveillante d'un faux positif ?", 'progress' => "Sauvegarde automatique", 'saved' => "Réponse enregistrée", 'answer' => "Je vérifie d'abord le contexte de l'alerte : utilisateur, horaires habituels et appareil. Je corrèle ensuite les journaux d'authentification et l'EDR, puis j'escalade si la compromission est probable."],
         'features' => [
             'eyebrow' => "Fonctionnalités", 'title' => "Tout ce qu'il faut pour s'entraîner sérieusement",
             'lead' => "Une plateforme pensée comme un véritable outil de préparation, du choix du scénario jusqu'au rapport détaillé.",

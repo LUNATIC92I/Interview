@@ -21,7 +21,7 @@ $score = (float) $r['score'];
 <section class="section" style="padding-top:16px"><div class="container stack">
     <div class="card reveal"><div class="card-body report-hero">
         <div class="score-ring <?= score_class($score) ?>" style="--value:<?= (int) round($score) ?>" role="img" aria-label="<?= e(t('report.score_aria', ['score' => (int) round($score)])) ?>">
-            <div class="score-ring-value"><strong><?= (int) round($score) ?></strong><span>/100</span></div>
+            <div class="score-ring-value"><strong data-count="<?= (int) round($score) ?>"><?= (int) round($score) ?></strong><span>/100</span></div>
         </div>
         <div>
             <h2 style="margin-bottom:.3rem"><?= e(t('report.overall_score')) ?> : <?= e(score_label($score)) ?></h2>

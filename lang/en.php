@@ -80,8 +80,9 @@ return [
         'point_1' => ":count professions covered, from IT to international organisations",
         'point_2' => ":count questions written in French and English",
         'point_3' => "Transparent scoring grids and PDF report",
+        'stats' => ['professions' => "professions", 'questions' => "bilingual questions", 'types' => "interview types", 'modes' => "simulation modes", 'label' => "The platform's content in figures"],
         'mock' => ['window' => "Simulation in progress", 'profession' => "SOC analyst", 'question' => "Question 3 of 8",
-            'text' => "How do you tell malicious activity from a false positive?", 'progress' => "Autosave on", 'saved' => "Answer saved"],
+            'text' => "How do you tell malicious activity from a false positive?", 'progress' => "Autosave on", 'saved' => "Answer saved", 'answer' => "I first check the alert context: user, usual hours and device. Then I correlate the authentication logs with the EDR, and escalate if a compromise is likely."],
         'features' => [
             'eyebrow' => "Features", 'title' => "Everything you need to practise seriously",
             'lead' => "A platform built as a genuine preparation tool, from choosing a scenario to the detailed report.",
